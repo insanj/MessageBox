@@ -1,4 +1,4 @@
-#import <Preferences/Preferences.h>
+#import <Preferences/PSListController.h>
 #import <UIKit/UIKit.h>
 
 #define KEY_ENABLED @"messageBoxEnabled"

@@ -65,7 +65,7 @@ END_GROUP()
 static BOOL versionNumberIsSupported() {
     NSString *versionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     NSString *maxSupportedVersion = nil;
-    
+
     if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.facebook.Paper"]) {
         maxSupportedVersion = MAX_SUPPORTED_VERSION_PAPER;
     }
@@ -75,7 +75,7 @@ static BOOL versionNumberIsSupported() {
     else {
         return NO;
     }
-    
+
     BOOL supported = YES;
     if (([versionString compare:maxSupportedVersion options:NSNumericSearch] == NSOrderedDescending)) {
         if (![_prefs[KEY_FORCE_ENABLED] boolValue]) {
@@ -89,9 +89,9 @@ static BOOL versionNumberIsSupported() {
                             afterDelay:5.0];
             supported = NO;
         }
-        
+
     }
-    
+
     return supported;
 }
 
@@ -101,7 +101,7 @@ static void messageBoxPrefsChanged(CFNotificationCenterRef center, void *observe
 
 CTOR() {
     _prefs = [[NSDictionary alloc] initWithContentsOfFile:MESSAGE_BOX_PREFERENCES_PATH];
-    
+
     if (_prefs == nil) {
         _prefs = @{ KEY_ENABLED : @(YES),
                     KEY_FORCE_ENABLED : @(NO),
@@ -109,19 +109,19 @@ CTOR() {
                     KEY_USE_FACEBOOK : @(YES) };
         [_prefs writeToFile:MESSAGE_BOX_PREFERENCES_PATH atomically:YES];
     }
-    
+
     if (_prefs[KEY_USE_FACEBOOK] == nil) {
         NSMutableDictionary *prefs = [_prefs mutableCopy];
         prefs[KEY_USE_FACEBOOK] = @(YES);
         _prefs = [prefs copy];
     }
-    
+
     if (_prefs[KEY_USE_PAPER] == nil) {
         NSMutableDictionary *prefs = [_prefs mutableCopy];
         prefs[KEY_USE_PAPER] = @(YES);
         _prefs = [prefs copy];
     }
-    
+
     if (![_prefs[KEY_ENABLED] boolValue]) {
         return;
     }
@@ -131,7 +131,7 @@ CTOR() {
 
     BOOL needsUIKitHooks = NO;
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
-    
+
     if ([bundleIdentifier isEqualToString:@"com.facebook.Paper"]) {
         if (![_prefs[KEY_USE_PAPER] boolValue] || !versionNumberIsSupported()) {
             return;
@@ -150,14 +150,14 @@ CTOR() {
             NSLog(@"GOT HERE SOMEHOW");
             return;
         }
-        
+
         INIT(FacebookHooks);
-        
+
         CFNotificationCenterRef darwin = CFNotificationCenterGetDarwinNotifyCenter();
         CFNotificationCenterAddObserver(darwin, NULL, fbResignChatHeads, CFSTR("ca.adambell.messagebox.fbResignChatHeads"), NULL, CFNotificationSuspensionBehaviorCoalesce);
         CFNotificationCenterAddObserver(darwin, NULL, fbForceActive, CFSTR("ca.adambell.messagebox.fbForceActive"), NULL, CFNotificationSuspensionBehaviorCoalesce);
         CFNotificationCenterAddObserver(darwin, NULL, fbForceBackgrounded, CFSTR("ca.adambell.messagebox.fbForceBackgrounded"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-        
+
         // Rotation Handling
         CFNotificationCenterAddObserver(darwin, NULL, fbShouldRotate, CFSTR(ROTATION_PORTRAIT_NOTIFICATION), NULL, CFNotificationSuspensionBehaviorCoalesce);
         CFNotificationCenterAddObserver(darwin, NULL, fbShouldRotate, CFSTR(ROTATION_PORTRAIT_UPSIDEDOWN_NOTIFICATION), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -167,18 +167,18 @@ CTOR() {
     }
     else if ([bundleIdentifier isEqualToString:@"com.apple.springboard"]) {
         needsUIKitHooks = YES;
-        
+
         INIT(SpringBoardHooks);
-        
+
         DebugLog(@"BEGIN MESSAGEBOX HOOKS YAY");
 
         CFNotificationCenterRef darwin = CFNotificationCenterGetDarwinNotifyCenter();
         CFNotificationCenterAddObserver(darwin, NULL, fbLaunching, CFSTR("ca.adambell.messagebox.fbLaunching"), NULL, CFNotificationSuspensionBehaviorCoalesce);
         CFNotificationCenterAddObserver(darwin, NULL, fbLaunching, CFSTR("ca.adambell.messagebox.paperLaunching"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-        
+
         CFNotificationCenterAddObserver(darwin, NULL, fbQuitting, CFSTR("ca.adambell.messagebox.paperQuitting"), NULL, CFNotificationSuspensionBehaviorCoalesce);
         CFNotificationCenterAddObserver(darwin, NULL, fbQuitting, CFSTR("ca.adambell.messagebox.fbQuitting"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-        
+
         CFNotificationCenterAddObserver(darwin, NULL, fbDidTapChatHead, CFSTR("ca.adambell.MessageBox.fbDidTapChatHead"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 
         DebugLog(@"END MESSAGEBOX HOOKS YAY");
@@ -195,7 +195,7 @@ CTOR() {
     else {
         needsUIKitHooks = YES;
     }
-    
+
     if (needsUIKitHooks) {
         INIT(UIKitHooks);
     }

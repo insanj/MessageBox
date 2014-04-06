@@ -308,7 +308,7 @@ HOOK(FBChatHeadSurfaceView)
             chatHeadWindowFrame.origin.y += 20.0;
             chatHeadWindowFrame.size.height -= 20.0;
         }
-        
+
         ORIG(chatHeadWindowFrame);
     }
     else {

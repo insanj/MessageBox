@@ -17,10 +17,10 @@
 #include <dlfcn.h>
 #include <sys/sysctl.h>
 
-#import "substrate.h"
-#import "rocketbootstrap.h"
+#import <substrate.h>
+#import <RocketBootstrap/rocketbootstrap.h>
 
-#import <xctheos.h>
+#import <xctheos/xctheos.h>
 
 #ifdef DEBUG
     #define DebugLog(str, ...) NSLog(str, ##__VA_ARGS__)
